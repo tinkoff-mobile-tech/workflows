@@ -62,3 +62,15 @@ signing.password=
 ossrhUsername=oss username
 ossrhPassword=oss pass
 ```
+
+### Use a specific java version
+
+```yaml
+jobs:
+  check:
+    uses: tinkoff-mobile-tech/workflow/.github/workflows/android_merge_request.yml@main
+    with:
+      java_version: '8'
+```
+
+by default java is 11

@@ -7,6 +7,11 @@ on:
         required: true
       sign_ossrh_gradle_properties:
         required: true
+    inputs:
+      java_version:
+        default: '11'
+        required: false
+        type: string
 
 jobs:
   publish:
@@ -15,10 +20,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: set up JDK 11
+      - name: set up JDK ${{ inputs.java_version }}
         uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: ${{ inputs.java_version }}
           distribution: 'temurin'
           cache: gradle
 
