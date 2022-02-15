@@ -28,7 +28,10 @@ jobs:
 
 Publish aar to maven central via `./gradlew uploadArchive` (gradle task should be added in the project).
 
-Release triggired by push tag as `\d+\.\d+\.\d+` for example: `1.0.3`
+For release:
+1. Go to "actions"
+2. Select "Publish" on the left column with workflows.
+3. Click on the green button "Run workflow".
 
 ! You should increment the version by yourself in the repository.
 
@@ -40,9 +43,7 @@ Release triggired by push tag as `\d+\.\d+\.\d+` for example: `1.0.3`
 name: publish
 
 on:
-  push:
-    tags:
-      - '\d+\.\d+\.\d+'
+  workflow_dispatch:
 
 
 jobs:
