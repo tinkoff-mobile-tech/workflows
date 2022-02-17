@@ -29,7 +29,7 @@ jobs:
 Publish aar to maven central via `./gradlew uploadArchive` (gradle task should be added in the project).
 
 For release:
-1. Go to "actions"
+1. Go to "actions".
 2. Select "Publish" on the left column with workflows.
 3. Click on the green button "Run workflow".
 
@@ -37,7 +37,7 @@ For release:
 
 #### Setup
 
-1. Add gradle task uploadArchive. [Example commit with a file.](https://github.com/tinkoff-mobile-tech/TinkoffID-Android/pull/12/commits/d24a2b3c2cd9f280f832e6c0ba10da061caf0864)
+1. Add gradle plugin "maven" task `uploadArchive` [Example commit with a file.](https://github.com/tinkoff-mobile-tech/TinkoffID-Android/pull/12/commits/d24a2b3c2cd9f280f832e6c0ba10da061caf0864) or plugin "maven-publish" with task `publishReleasePublicationToMavenRepository`
 2. Add to repository `.github/workflow/publish.yml`
 ```yml
 name: publish

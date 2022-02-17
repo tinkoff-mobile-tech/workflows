@@ -57,10 +57,15 @@ jobs:
           (! git ls-remote --tags | grep refs/tags/${TAG_NAME})
           echo "::set-output name=tag_name::$TAG_NAME"
 
-      - name: upload artifacts
+      - name: Upload artifacts
         id: artifacts
         run: |
-          ./gradlew uploadArchives -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
+          set -o xtrace
+          if ./gradlew tasks --all | grep uploadArchives; then
+              ./gradlew uploadArchives -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
+          else
+              ./gradlew publishReleasePublicationToMavenRepository -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
+          fi
           AAR_PATH=$(find . -name *.aar | tail -n 1)
           FILE_NAME=${AAR_PATH##*/}
           echo "::set-output name=aar_path::$AAR_PATH"
