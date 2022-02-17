@@ -66,33 +66,21 @@ jobs:
           else
               ./gradlew publishReleasePublicationToMavenRepository -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
           fi
-          AAR_PATH=$(find . -name *.aar | tail -n 1)
-          FILE_NAME=${AAR_PATH##*/}
-          echo "::set-output name=aar_path::$AAR_PATH"
-          echo "::set-output name=file_name::$FILE_NAME"
 
-      - name: push tag
+      - name: Push tag
         uses: actions-ecosystem/action-push-tag@v1
         with:
           tag: ${{ steps.version.outputs.tag_name }}
 
       - name: Create Release ✅
         id: create_release
-        uses: actions/create-release@v1
+        run: |
+          set -x
+          assets=()
+          for asset in $(find . -name *.aar); do
+            assets+=("-a" "$asset")
+          done
+          hub release create "${assets[@]}" -m "$TAG_NAME" "$TAG_NAME"
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        with:
-          tag_name: ${{ steps.version.outputs.tag_name }}
-          release_name: ${{ steps.version.outputs.tag_name }}
-          draft: false
-          prerelease: false
-
-      - name: Upload AAR 🗳
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.artifacts.outputs.aar_path }}
-          asset_name: ${{ steps.artifacts.outputs.file_name }}
-          asset_content_type: application/aar
+          TAG_NAME: ${{ steps.version.outputs.tag_name }}
