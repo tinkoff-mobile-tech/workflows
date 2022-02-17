@@ -25,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           ref: ${{ github.event.repository.default_branch }}
       - name: set up JDK ${{ inputs.java_version }}
         uses: actions/setup-java@v2
@@ -60,7 +61,6 @@ jobs:
       - name: Upload artifacts
         id: artifacts
         run: |
-          set -o xtrace
           if ./gradlew tasks --all | grep uploadArchives; then
               ./gradlew uploadArchives -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
           else
