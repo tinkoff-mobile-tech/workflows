@@ -21,7 +21,7 @@ on:
 
 jobs:
   check:
-    uses: tinkoff-mobile-tech/workflow/.github/workflows/android_merge_request.yml@main
+    uses: tinkoff-mobile-tech/workflows/.github/workflows/android_lib.merge_request.yml@v1
 ```
 
 ### Publish 
@@ -48,7 +48,7 @@ on:
 
 jobs:
   publish:
-    uses: tinkoff-mobile-tech/workflow/.github/workflows/publish_android_aar.yml@main
+    uses: tinkoff-mobile-tech/workflows/.github/workflows/android_lib.publish.yml@v1
     secrets:
       gpg_key: ${{ secrets.GPG_KEY }}
       sign_ossrh_gradle_properties: ${{ secrets.SIGN_OSSRH_GRADLE_PROPERTIES }}
@@ -69,7 +69,7 @@ ossrhPassword=oss pass
 ```yaml
 jobs:
   check:
-    uses: tinkoff-mobile-tech/workflow/.github/workflows/android_merge_request.yml@main
+    uses: tinkoff-mobile-tech/workflows/.github/workflows/android_lib.merge_request.yml@v1
     with:
       java_version: '8'
 ```
