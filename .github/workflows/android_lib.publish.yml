@@ -27,12 +27,12 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.repository.default_branch }}
+
       - name: set up JDK ${{ inputs.java_version }}
         uses: actions/setup-java@v2
         with:
           java-version: ${{ inputs.java_version }}
           distribution: 'temurin'
-          cache: gradle
 
       - name: Retrieve the secret and decode it to a file
         env:
