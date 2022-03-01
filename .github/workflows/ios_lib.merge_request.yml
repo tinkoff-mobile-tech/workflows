@@ -1,0 +1,23 @@
+name: ios merge request
+
+on:
+  workflow_call:
+
+jobs:
+  check:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+
+      - name: Bundle install
+        run: bundle install
+
+      - name: tests lint
+        run: bundle exec fastlane check
+
+
