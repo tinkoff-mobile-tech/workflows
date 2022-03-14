@@ -2,6 +2,16 @@ name: ios merge request
 
 on:
   workflow_call:
+    inputs:
+      xcodeproj_path:
+        required: true
+        type: string
+      scheme_name:
+        required: true
+        type: string
+      podspec_name:
+        required: true
+        type: string
 
 jobs:
   check:
@@ -18,6 +28,10 @@ jobs:
         run: bundle install
 
       - name: tests lint
+        env:
+          XCODEPROJ_PATH: ${{ inputs.xcodeproj_path }}
+          SCHEME_NAME: ${{ inputs.scheme_name }}
+          PODSPEC_NAME: ${{ inputs.podspec_name }}
         run: bundle exec fastlane check
 
 

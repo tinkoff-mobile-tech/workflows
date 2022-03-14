@@ -2,6 +2,13 @@ name: deploy_to_cocoapods
 
 on:
   workflow_call:
+    inputs:
+      xcodeproj_path:
+        required: true
+        type: string
+      scheme_name:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -21,3 +28,5 @@ jobs:
           bundle exec fastlane release type:${{ inputs.bump_type }}
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+          XCODEPROJ_PATH: ${{ inputs.xcodeproj_path }}
+          SCHEME_NAME: ${{ inputs.scheme_name }}

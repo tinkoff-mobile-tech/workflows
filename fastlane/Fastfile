@@ -3,11 +3,7 @@ lane :release do |options|
   bump_type = resolve_bump_type(options)
 
   # Checking that everything is alright
-  checkup
-
-  # Checking git
-  ensure_git_status_clean
-  ensure_git_branch(branch: "master")
+  check
 
   # Bumping podspec version
   version = version_bump_podspec(bump_type: bump_type)
@@ -38,8 +34,8 @@ lane :check do
 end
 
 lane :build_swift_package do
-  project_name = "TinkoffID.xcodeproj"
-  scheme_name = "TinkoffID-Package"
+  project_name = ENV['XCODEPROJ_PATH']
+  scheme_name = ENV['SCHEME_NAME']
   config_file_name = "Config.xcconfig"
 
   # Creating configuration file
