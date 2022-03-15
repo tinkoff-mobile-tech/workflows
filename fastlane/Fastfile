@@ -12,7 +12,7 @@ lane :release do |options|
   stamp_changelog(section_identifier: version)
 
   # Creating release commit and tag
-  git_commit(path: "CHANGELOG.md", message: "Release #{version}")
+  git_commit(path: ["CHANGELOG.md", ENV['PODSPEC_NAME']], message: "Release #{version}")
   add_git_tag(tag: version)
 
   # Pushing to remote repo
@@ -63,7 +63,7 @@ lane :lint_fastfile do
 end
 
 lane :push_podspec do
-  podspec_name = "TinkoffID.podspec"
+  podspec_name = ENV['PODSPEC_NAME']
 
   pod_push(
     path: podspec_name,

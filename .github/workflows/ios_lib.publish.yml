@@ -9,6 +9,13 @@ on:
       scheme_name:
         required: true
         type: string
+      podspec_name:
+        required: true
+        type: string
+      bump_type:
+        default: "patch"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -30,3 +37,4 @@ jobs:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
           XCODEPROJ_PATH: ${{ inputs.xcodeproj_path }}
           SCHEME_NAME: ${{ inputs.scheme_name }}
+          PODSPEC_NAME: ${{ inputs.podspec_name }}
