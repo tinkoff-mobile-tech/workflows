@@ -28,15 +28,36 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Bundle install
-        run: bundle install
+        run: |
+          brew install grep
+          bundle install
 
-      - name: Deploy to Cocoapods
+      - name: Release
+        id: release
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           bundle exec fastlane release type:${{ inputs.bump_type }}
+          NEW_CHANGES=$(cat fastlane/new_changes.txt)
+          echo "NEW_CHANGES<<EOF" >> $GITHUB_ENV
+          echo "$NEW_CHANGES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          BUMPED_VERSION=$(ggrep -oP "s\.version\s+=\s+['\"]\K([\d.]+)" ${{ inputs.podspec_name }})
+          echo "::set-output name=bumped_version::$BUMPED_VERSION"
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
           XCODEPROJ_PATH: ${{ inputs.xcodeproj_path }}
           SCHEME_NAME: ${{ inputs.scheme_name }}
           PODSPEC_NAME: ${{ inputs.podspec_name }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: ${{ steps.release.outputs.bumped_version }}
+          release_name: ${{ steps.release.outputs.bumped_version }}
+          body: ${{ env.NEW_CHANGES }}
+          draft: false
+          prerelease: false

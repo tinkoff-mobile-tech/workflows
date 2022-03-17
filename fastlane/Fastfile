@@ -8,6 +8,11 @@ lane :release do |options|
   # Bumping podspec version
   version = version_bump_podspec(bump_type: bump_type)
 
+  text = read_changelog
+  changelog = File.open('new_changes.txt', "w")
+  changelog.puts(text)
+  changelog.close
+
   # Stamping changelog
   stamp_changelog(section_identifier: version)
 
