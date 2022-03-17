@@ -63,7 +63,9 @@ lane :lint_fastfile do
       UI.user_error!("rubocop execution failed: #{result}")
     end
 
-    sh('bundle exec rubocop -c .rubocop.yml', error_callback: error_callback)
+    if(File.exist?('.rubocop.yml'))
+        sh('bundle exec rubocop -c .rubocop.yml', error_callback: error_callback)
+    end
   end
 end
 
