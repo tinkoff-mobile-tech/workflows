@@ -2,6 +2,9 @@ name: deploy_to_cocoapods
 
 on:
   workflow_call:
+    secrets:
+      cocapods_trunk_token:
+        required: true
     inputs:
       xcodeproj_path:
         required: true
@@ -45,7 +48,7 @@ jobs:
           BUMPED_VERSION=$(ggrep -oP "s\.version\s+=\s+['\"]\K([\d.]+)" ${{ inputs.podspec_name }})
           echo "::set-output name=bumped_version::$BUMPED_VERSION"
         env:
-          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.cocapods_trunk_token }}
           XCODEPROJ_PATH: ${{ inputs.xcodeproj_path }}
           SCHEME_NAME: ${{ inputs.scheme_name }}
           PODSPEC_NAME: ${{ inputs.podspec_name }}
