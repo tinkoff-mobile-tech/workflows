@@ -35,7 +35,9 @@ lane :check do
   pod_lib_lint(allow_warnings: true)
 
   # Buidling Swift package
-  build_swift_package
+  if(File.exist?('Package.swift'))
+    build_swift_package
+  end
 end
 
 lane :build_swift_package do
