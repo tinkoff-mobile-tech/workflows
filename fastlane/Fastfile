@@ -4,27 +4,36 @@ lane :release do |options|
 
   # Checking that everything is alright
   check
-
+  root_path = File.join(Dir.pwd, "..")
+  podspec_names = Dir.glob('*.podspec', base: root_path).select { |f| File.expand_path(f) }
   # Bumping podspec version
-  version = version_bump_podspec(bump_type: bump_type)
+  for podspec_name in podspec_names
+    version = version_bump_podspec(path: podspec_name, bump_type: bump_type)
+  end
 
   text = read_changelog
   changelog = File.open('new_changes.txt', "w")
   changelog.puts(text)
   changelog.close
 
+  version_file = File.open('version.txt', "w")
+  version_file.puts(version)
+  version_file.close
+
   # Stamping changelog
   stamp_changelog(section_identifier: version)
 
   # Creating release commit and tag
-  git_commit(path: ["CHANGELOG.md", ENV['PODSPEC_NAME']], message: "Release #{version}")
+  git_commit(path: ["CHANGELOG.md"] + podspec_names, message: "Release #{version}")
   add_git_tag(tag: version)
 
   # Pushing to remote repo
   push_to_git_remote(tags: true)
 
   # Pushing podspec to Cocoapods repo
-  push_podspec
+  for podspec_name in podspec_names
+    push_podspec(podspec_name)
+  end
 end
 
 lane :check do
@@ -71,9 +80,7 @@ lane :lint_fastfile do
   end
 end
 
-lane :push_podspec do
-  podspec_name = ENV['PODSPEC_NAME']
-
+def push_podspec(podspec_name)
   pod_push(
     path: podspec_name,
     allow_warnings: true,

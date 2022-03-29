@@ -7,13 +7,10 @@ on:
         required: true
     inputs:
       xcodeproj_path:
-        required: true
+        required: false
         type: string
       scheme_name:
-        required: true
-        type: string
-      podspec_name:
-        required: true
+        required: false
         type: string
       bump_type:
         default: "patch"
@@ -45,13 +42,12 @@ jobs:
           echo "NEW_CHANGES<<EOF" >> $GITHUB_ENV
           echo "$NEW_CHANGES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          BUMPED_VERSION=$(ggrep -oP "\.version\s+=\s+['\"]\K([\d.]+)" ${{ inputs.podspec_name }})
+          BUMPED_VERSION=$(cat fastlane/version.txt)
           echo "::set-output name=bumped_version::$BUMPED_VERSION"
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.cocapods_trunk_token }}
           XCODEPROJ_PATH: ${{ inputs.xcodeproj_path }}
           SCHEME_NAME: ${{ inputs.scheme_name }}
-          PODSPEC_NAME: ${{ inputs.podspec_name }}
 
       - name: Create Release
         id: create_release
