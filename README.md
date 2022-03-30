@@ -75,3 +75,77 @@ jobs:
 ```
 
 by default java is 11
+
+## iOS library workflow
+
+### Setup 
+
+1. `./Gemfile` in the root repository:
+
+```
+source "https://rubygems.org"
+
+gem "cocoapods", "~> 1.11.3"
+gem 'fastlane', '~> 2.204.3'
+gem 'fastlane-plugin-changelog'
+gem 'rubocop', '~> 0.93.1' # if exists
+gem 'rubocop-require_tools'
+
+plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
+eval_gemfile(plugins_path) if File.exist?(plugins_path)
+```
+
+2`fastlane/Fastfile`
+
+```ruby
+import_from_git(
+  url: "https://github.com/tinkoff-mobile-tech/workflows.git",
+  path: "fastlane/Fastfile" 
+)
+```
+
+### setup merge request workflow
+
+```yaml
+name: merge request
+
+on:
+  pull_request:
+    branches:
+      - 'master'
+
+jobs:
+  check:
+    uses: tinkoff-mobile-tech/workflows/.github/workflows/ios_lib.merge_request.yml@v1
+    with:
+      xcodeproj_path: "TinkoffID.xcodeproj"
+      scheme_name: "TinkoffID-Package"
+```
+
+it calls `lint_fastfile`, `pod_lib_lint`, `swift package generate-xcodeproj`, `xcodebuild clean build`.
+
+### setup publications
+
+```yaml
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        default: "patch"
+        required: true
+        type: string
+
+jobs:
+  publish:
+    uses: tinkoff-mobile-tech/workflows/.github/workflows/ios_lib.publish.yml@v1
+    with:
+      xcodeproj_path: "TinkoffID.xcodeproj"
+      scheme_name: "TinkoffID-Package"
+      bump_type: ${{ inputs.bump_type }}
+    secrets:
+      cocapods_trunk_token: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+```
+
+it pushes to cocapods trunk.
