@@ -11,6 +11,8 @@ lane :release do |options|
     version = version_bump_podspec(path: podspec_name, bump_type: bump_type)
   end
 
+  add_files = extend_bump_version(version: version)
+
   text = read_changelog
   changelog = File.open('new_changes.txt', "w")
   changelog.puts(text)
@@ -24,7 +26,7 @@ lane :release do |options|
   stamp_changelog(section_identifier: version)
 
   # Creating release commit and tag
-  git_commit(path: ["CHANGELOG.md"] + podspec_names, message: "Release #{version}")
+  git_commit(path: ["CHANGELOG.md"] + podspec_names + add_files, message: "Release #{version}", skip_git_hooks: true)
   add_git_tag(tag: version)
 
   # Pushing to remote repo
@@ -34,6 +36,10 @@ lane :release do |options|
   for podspec_name in podspec_names
     push_podspec(podspec_name)
   end
+end
+
+lane :extend_bump_version do |options|
+  []
 end
 
 lane :check do

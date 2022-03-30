@@ -87,6 +87,7 @@ source "https://rubygems.org"
 
 gem "cocoapods", "~> 1.11.3"
 gem 'fastlane', '~> 2.204.3'
+gem 'fastlane-plugin-changelog'
 gem 'rubocop', '~> 0.93.1' # if exists
 gem 'rubocop-require_tools'
 
@@ -94,18 +95,11 @@ plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path)
 ```
 
-2. `fastlane/Pluginfile` 
-
-```
-gem 'fastlane-plugin-changelog'
-```
-
-3. `fastlane/Fastfile`
+2`fastlane/Fastfile`
 
 ```ruby
 import_from_git(
   url: "https://github.com/tinkoff-mobile-tech/workflows.git",
-  branch: "master", 
   path: "fastlane/Fastfile" 
 )
 ```
@@ -126,7 +120,6 @@ jobs:
     with:
       xcodeproj_path: "TinkoffID.xcodeproj"
       scheme_name: "TinkoffID-Package"
-      podspec_name: "TinkoffID.podspec"
 ```
 
 it calls `lint_fastfile`, `pod_lib_lint`, `swift package generate-xcodeproj`, `xcodebuild clean build`.
@@ -150,7 +143,6 @@ jobs:
     with:
       xcodeproj_path: "TinkoffID.xcodeproj"
       scheme_name: "TinkoffID-Package"
-      podspec_name: "TinkoffID.podspec"
       bump_type: ${{ inputs.bump_type }}
     secrets:
       cocapods_trunk_token: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
