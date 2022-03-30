@@ -13,7 +13,6 @@ on:
         required: false
         type: string
       bump_type:
-        default: "patch"
         required: true
         type: string
 
