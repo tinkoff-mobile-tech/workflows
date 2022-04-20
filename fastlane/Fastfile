@@ -5,7 +5,7 @@ lane :release do |options|
   # Checking that everything is alright
   check
   root_path = File.join(Dir.pwd, "..")
-  podspec_names = Dir.glob('*.podspec', base: root_path).select { |f| File.expand_path(f) }
+  podspec_names = Dir.glob('*.podspec', base: root_path).map { |f| File.expand_path(f) }
   # Bumping podspec version
   for podspec_name in podspec_names
     version = version_bump_podspec(path: podspec_name, bump_type: bump_type)
@@ -43,16 +43,18 @@ lane :extend_bump_version do |options|
 end
 
 lane :check do
-  # Linting ruby files
-  lint_fastfile
+    # Linting ruby files
+    lint_fastfile
 
-  # Linting podspec
-  pod_lib_lint(allow_warnings: true)
+    # Linting podspec
+    podspec_names = Dir.glob('*.podspec', base: '..').map { |f| File.basename(f, '.*') }
+    include_podspecs = "{#{podspec_names.join(',')}}.podspec"
+    pod_lib_lint(allow_warnings: true, include_podspecs: include_podspecs)
 
-  # Buidling Swift package
-  if(File.exist?('Package.swift'))
-    build_swift_package
-  end
+    # Buidling Swift package
+    if(File.exist?('Package.swift'))
+        build_swift_package
+    end
 end
 
 lane :build_swift_package do
