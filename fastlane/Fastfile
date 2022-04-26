@@ -4,8 +4,7 @@ lane :release do |options|
 
   # Checking that everything is alright
   check
-  root_path = File.join(Dir.pwd, "..")
-  podspec_names = Dir.glob('*.podspec', base: root_path).map { |f| File.expand_path(f) }
+  podspec_names = Dir.glob('*.podspec', base: '..')
   # Bumping podspec version
   for podspec_name in podspec_names
     version = version_bump_podspec(path: podspec_name, bump_type: bump_type)
