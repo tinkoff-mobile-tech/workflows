@@ -1,6 +1,11 @@
-# workflow
+# Reusable workflows
 
-Repository with github reusable workflows. 
+#### Setup your android / ios project workflow on GitHub in 5 minutes!
+
+Reusable workflows for:
+1. **Merge requests** **android / ios libs.**
+2. **Publication** to **trunk** for ios libs.
+3. **Publication** to **maven central** for android aar libs.
 
 ## Android library workflow
 
@@ -10,7 +15,7 @@ Via `./gradlew check` , which included detekt, tests, lint.
 
 #### Setup
 
-1. Add to repository `.github/workflow/merge_request.yml`
+Add to repository `.github/workflows/merge_request.yml`
 ```yml
 name: merge request
 
@@ -26,9 +31,17 @@ jobs:
 
 ### Publish 
 
-Publish aar to maven central via `./gradlew uploadArchive` (gradle task should be added in the project).
+#### Description 
 
-For release:
+0. Tag was pushed by developer.
+1. The version from the source is picked up (by default from the gradle.propeties file at the root of the project).
+2. Check if the same tag exists.
+3. Published on maven Central https://mvnrepository.com/artifact/ru.tinkoff
+4. A release will be created on github
+5. The tag with the version number will push.
+
+#### Usage
+
 1. Go to "actions".
 2. Select "Publish" on the left column with workflows.
 3. Click on the green button "Run workflow".
@@ -38,7 +51,7 @@ For release:
 #### Setup
 
 1. Add gradle plugin "maven" task `uploadArchive` [Example commit with a file.](https://github.com/tinkoff-mobile-tech/TinkoffID-Android/pull/12/commits/d24a2b3c2cd9f280f832e6c0ba10da061caf0864) or plugin "maven-publish" with task `publishReleasePublicationToMavenRepository`
-2. Add to repository `.github/workflow/publish.yml`
+2. Add to repository `.github/workflows/publish.yml`
 ```yml
 name: publish
 
@@ -78,7 +91,7 @@ by default java is 11
 
 ## iOS library workflow
 
-### Setup 
+### Setup for all workflows
 
 1. `./Gemfile` in the root repository:
 
@@ -104,8 +117,12 @@ import_from_git(
 )
 ```
 
-### setup merge request workflow
+### Merge request
 
+
+#### Setup
+
+Add to repository `.github/workflows/merge_request.yml`
 ```yaml
 name: merge request
 
@@ -122,10 +139,33 @@ jobs:
       scheme_name: "TinkoffID-Package"
 ```
 
+use with `xcodeproj_path` and `scheme_name` only for spm built libs, for other options you don't have to.
+
 it calls `lint_fastfile`, `pod_lib_lint`, `swift package generate-xcodeproj`, `xcodebuild clean build`.
 
-### setup publications
+### Publication
 
+1. Runs lint and other checks.
+2. The version is bumped in *.podspec files.
+3. The changelog is being changed.
+4. Pushed to cocaopods trunk repository.
+5. The tag will push with the version number and modified *.podspec files.
+6. The release card will be created in github.
+
+#### Usage
+
+1. Go to "actions".
+2. Select "Publish" on the left column with workflows.
+3. Click on the green button "Run workflow".
+4. Type which type of version have to bump - patch / minor / major.
+
+#### Setup
+
+For publishing to work, secrets must be added to the project or organization: `COCOAPODS_TRUNK_TOKEN`
+- How to get COCOAPODS_TRUNK_TOKEN - https://github.com/marketplace/actions/deploy-to-cocoapod-action
+- How trunk publishing works - https://guides.cocoapods.org/making/making-a-cocoapod.html. 
+
+Add to repository `.github/workflows/publish.yml`
 ```yaml
 name: publish
 
@@ -133,7 +173,6 @@ on:
   workflow_dispatch:
     inputs:
       bump_type:
-        default: "patch"
         required: true
         type: string
 
@@ -143,9 +182,21 @@ jobs:
     with:
       xcodeproj_path: "TinkoffID.xcodeproj"
       scheme_name: "TinkoffID-Package"
-      bump_type: ${{ inputs.bump_type }}
+      bump_type: ${{ github.event.inputs.bump_type }}
     secrets:
       cocapods_trunk_token: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
 ```
 
-it pushes to cocapods trunk.
+#### How to change one more files during bump version.
+
+Override lane `extend_bump_version`. Add to `fastlane/Fastfile`.
+```ruby
+override_lane :extend_bump_version do |options|
+  version_swift="TinkoffASDKCore/TinkoffASDKCore/Version.swift"
+  relative_file_path = "../" + version_swift
+  data = File.read(relative_file_path)
+  data = data.gsub(/versionString = \"([\d.]+)\"/, "versionString = \"#{options[:version]}\"")
+  File.write(relative_file_path, data)
+  [version_swift]
+end
+```
