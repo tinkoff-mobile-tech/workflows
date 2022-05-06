@@ -68,9 +68,13 @@ jobs:
           fi
 
       - name: Push tag
-        uses: actions-ecosystem/action-push-tag@v1
-        with:
-          tag: ${{ steps.version.outputs.tag_name }}
+        run: |
+          tag=${{ steps.version.outputs.tag_name }}
+          message='${{ steps.version.outputs.tag_name }}'
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag -a "${tag}" -m "${message}"
+          git push origin "${tag}"
 
       - name: Create Release ✅
         id: create_release
