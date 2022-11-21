@@ -62,9 +62,9 @@ jobs:
         id: artifacts
         run: |
           if ./gradlew tasks --all | grep uploadArchives; then
-              ./gradlew uploadArchives -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
+              ./gradlew uploadArchives -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease --no-configuration-cache
           else
-              ./gradlew publishReleasePublicationToMavenRepository -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease
+              ./gradlew publishReleasePublicationToMavenRepository -Psigning.secretKeyRingFile=$HOME/secring.gpg -Prelease --no-configuration-cache
           fi
 
       - name: Push tag
