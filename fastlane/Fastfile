@@ -91,20 +91,20 @@ def push_podspec(podspec_name)
   tries = 6
   for i in 1..tries
     begin
-        sh("bundle exec pod repo update")
-         pod_push(
-            path: podspec_name,
-            allow_warnings: true,
-            skip_tests: true
-         )
-        break
+      sh("bundle exec pod repo update")
+      pod_push(
+        path: podspec_name,
+        allow_warnings: true,
+        skip_tests: true
+      )
+      break
     rescue StandardError => error
-        if i == tries
-            raise
-        end
-        delay = 3**i
-        puts "retry pod_push after #{delay}"
-        sleep(delay)
+      if i == tries
+        raise
+      end
+      delay = 3**i
+      puts "retry pod_push after #{delay}"
+      sleep(delay)
     end
   end
 end
