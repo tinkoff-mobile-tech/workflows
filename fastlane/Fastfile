@@ -42,18 +42,37 @@ lane :extend_bump_version do |options|
 end
 
 lane :check do
-    # Linting ruby files
-    lint_fastfile
+  # Linting ruby files
+  lint_fastfile
 
-    # Linting podspec
-    podspec_names = Dir.glob('*.podspec', base: '..').map { |f| File.basename(f, '.*') }
-    include_podspecs = "{#{podspec_names.join(',')}}.podspec"
-    pod_lib_lint(allow_warnings: true, include_podspecs: include_podspecs)
+  # Linting podspecs
+  lint_all_podspecs
 
-    # Buidling Swift package
-    if(File.exist?('Package.swift'))
-        build_swift_package
-    end
+  # Buidling Swift package
+  build_swift_package if File.exist?('Package.swit')
+end
+
+lane :lint_all_podspecs do 
+  Dir.chdir("..") do
+    sh("bundle exec pod repo update")
+  end
+  all_pods_dependencies = scan_local_podspec_dependencies
+
+  Dir.glob('*.podspec', base: '..').each do |podspec_path|
+    podspec_name = File.basename(podspec_path, '.podspec')
+    pod_dependencies = all_pods_dependencies[podspec_name]
+    include_podspecs = nil
+    # We need include only necessary local podspecs, not all!
+    include_podspecs = "{#{pod_dependencies.sort.join(',')}}.podspec" unless pod_dependencies.empty?
+    
+    pod_lib_lint(
+      podspec: podspec_path,
+      include_podspecs: include_podspecs,
+      allow_warnings: true,
+      skip_tests: true,
+      fail_fast: true
+    )
+  end
 end
 
 lane :build_swift_package do
