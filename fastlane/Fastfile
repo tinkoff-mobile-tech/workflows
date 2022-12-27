@@ -112,9 +112,11 @@ def push_podspec(podspec_name)
     begin
       sh("bundle exec pod repo update")
       pod_push(
+        use_bundle_exec: true,
         path: podspec_name,
         allow_warnings: true,
-        skip_tests: true
+        skip_tests: true,
+        synchronous: true
       )
       break
     rescue StandardError => error
