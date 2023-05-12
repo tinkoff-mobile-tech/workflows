@@ -15,11 +15,15 @@ on:
       bump_type:
         required: true
         type: string
+      runner:
+        default: 'macos-12'
+        required: false
+        type: string
 
 jobs:
   build:
 
-    runs-on: macos-11
+    runs-on: ${{ inputs.runner }}
 
     steps:
       - uses: actions/checkout@v3
