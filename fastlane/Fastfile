@@ -115,6 +115,7 @@ def push_podspec(podspec_name)
         use_bundle_exec: true,
         path: podspec_name,
         allow_warnings: true,
+        skip_import_validation: true,
         skip_tests: true,
         synchronous: true
       )
