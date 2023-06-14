@@ -19,8 +19,6 @@ module Fastlane
       end
 
       def self.details
-        # Optional:
-        # this is your chance to provide a more detailed description of this action
         'Parses podspec from a given list and topologically sorts them by dependency'
       end
 
@@ -39,11 +37,10 @@ module Fastlane
       end
 
       def self.return_value
-        # If your method provides a return value, you can describe here what it does
+        'An original list of podspec filenames sorted by dependency'
       end
 
       def self.authors
-        # So no one will ever forget your contribution to fastlane :) You are awesome btw!
         ['adarovsky']
       end
 
@@ -83,10 +80,6 @@ module Fastlane
 
       def name
         @spec.name
-      end
-
-      def to_s
-        "#{@spec}: #{path}/#{@spec.name}.podspec"
       end
     end
   end
