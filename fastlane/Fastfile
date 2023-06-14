@@ -110,7 +110,7 @@ end
 
 def push_podspec(podspec_name)
   tries = 6
-  (1..tries).each do |i|
+  for i in 1..tries
     begin
       sh("bundle exec pod repo update")
       pod_push(
