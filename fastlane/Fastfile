@@ -4,10 +4,12 @@ lane :release do |options|
 
   # Checking that everything is alright
   check
-  podspec_names = Dir.glob('*.podspec', base: '..')
+  podspec_names = sorted_podspecs(podspecs:Dir.glob('*.podspec', base: '..'))
   # Bumping podspec version
   for podspec_name in podspec_names
     version = version_bump_podspec(path: podspec_name, bump_type: bump_type)
+
+    bump_podspec_dependency(podspecs: podspec_names, name: podspec_name.delete_suffix('.podspec'), version: version)
   end
 
   add_files = extend_bump_version(version: version)
